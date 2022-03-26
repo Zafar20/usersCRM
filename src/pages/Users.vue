@@ -5,9 +5,9 @@
         <table>
           <thead>
             <tr>
-              <th @click="sort('name')">Name</th>
-              <th @click="sort('username')">UserName</th>
-              <th @click="sort('email')">Email</th>
+              <th @click="sort('name')">Name ↓</th>
+              <th @click="sort('username')">UserName ↓</th>
+              <th @click="sort('email')">Email ↓</th>
             </tr>
           </thead>
           <tbody>
@@ -22,6 +22,16 @@
           </tbody>
         </table>
         <p>debug:  sort: {{ currentSort }}, dir: {{ currentSortDir }}</p>
+        <p class="page">Страница {{ page.current }}  длина {{page.length}}</p>
+      </div>
+    </section>
+    <!-- buttons -->
+    <section>
+      <div class="container">
+          <div class="button-list">
+            <button class="btn btnPrimary" @click="prevPage">←</button>
+            <button class="btn btnPrimary" @click="nextPage">→</button>
+          </div>
       </div>
     </section>
   </div>
@@ -36,7 +46,11 @@ export default {
     return {
       users: [],
       currentSort: 'name',
-      currentSortDir: 'asc'
+      currentSortDir: 'asc',
+      page: {
+        current: 1,
+        length: 3
+      }
     } 
   },
   created() {
@@ -56,7 +70,11 @@ export default {
         if(this.currentSortDir === 'desc') mod = -1
         if(prev[this.currentSort] < next[this.currentSort] ) return -1 * mod      
         if(prev[this.currentSort] > next[this.currentSort] ) return 1 * mod   
-        // return 0    
+        return 0    
+      }).filter((row,index) => {
+          let start = (this.page.current - 1) * this.page.length;
+          let end = this.page.current  * this.page.length 
+          if(index >= start && index < end  ) return true 
       })
     }
   },
@@ -67,7 +85,19 @@ export default {
       }else {
         this.currentSort = e    
       }
+    },
+    //Pagination
+    prevPage() {
+      if(this.page.current > 1) {
+        this.page.current -= 1
+      }
+    },
+    nextPage() {
+       if((this.page.current * this.page.length) < this.users.length ) {
+        this.page.current += 1
+      }
     }
+
   }
 }
 </script>
@@ -79,6 +109,20 @@ img {
   height: auto;
   border-radius: 50%;
   margin-right: 16px;
+}
+
+
+.button-list {
+  gap: 30px;
+  display: flex;
+  justify-content: center;
+  .btn {
+    border-radius: 60px;
+
+  }
+}
+.page {
+  margin-top: 30px  ;
 }
 
 </style>
